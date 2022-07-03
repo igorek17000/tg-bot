@@ -22,8 +22,8 @@ bot.onText(/\/help/, (msg) => {
 
 function start(chatId) {
 	client.onmessage = async function(event) {
-		const binanceValue = JSON.parse(event.data);
-		// const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
+		// const binanceValue = JSON.parse(event.data);
+		const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
 		// const result = advcashValue.rate - binanceValue.data.c;
 		// bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result}\nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c}`);
 		// if(result >= 0.15) {
@@ -35,7 +35,8 @@ function start(chatId) {
 		// 	};
 		// 	bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
 		// }
-		bot.sendMessage(chatId, `${binanceValue.data.c}`)
+		bot.sendMessage(chatId, `${advcashValue.rate}`)
+		console.log(advcashValue.rate)
 	};
 }
 
@@ -51,17 +52,22 @@ client.onclose = function() {
 };
 
 async function getCurrencyValueAdvcash(fromValue, toValue, type, amountValue) {
-	const request = await advcash({
-		password: process.env.PASSWORD_API,
-		apiName: process.env.API_NAME,
-		accountEmail: process.env.ACCOUNT_EMAIL
-	});
-	const response = await request.checkCurrencyExchange({
-			from: fromValue,
-			to: toValue,
-			action: type,
-			amount: amountValue
+	try {
+		const request = await advcash({
+			password: process.env.PASSWORD_API,
+			apiName: process.env.API_NAME,
+			accountEmail: process.env.ACCOUNT_EMAIL
 		});
-	const result = await response;
-	return result;
+		const response = await request.checkCurrencyExchange({
+				from: fromValue,
+				to: toValue,
+				action: type,
+				amount: amountValue
+			});
+		const result = await response;
+		return result;
+	} catch(e) {
+		console.log('THERE WAS AN ERROR!!!!')
+		console.log(e)
+	}
 }
