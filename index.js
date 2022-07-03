@@ -25,7 +25,7 @@ function start(chatId) {
 		const binanceValue = JSON.parse(event.data);
 		const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
 		const result = advcashValue.rate - binanceValue.data.c;
-		bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result}`);
+		bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result}\nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c}`);
 		if(result >= 0.15) {
 			const obj = {
 				advcashPrice: advcashValue.rate,
