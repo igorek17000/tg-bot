@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const W3CWebSocket = require('websocket').w3cwebsocket;
 const client = new W3CWebSocket('wss://stream.binance.com:9443/stream?streams=usdtrub@miniTicker');
 
-const bot = new TelegramBot("5466187776:AAHBMcTyg552dhgB4GRVKwoPrQHXDwk9wWI", {polling: true});
+const bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
 
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
@@ -25,7 +25,7 @@ function start(chatId) {
 		const binanceValue = JSON.parse(event.data);
 		const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
 		const result = advcashValue.rate - binanceValue.data.c;
-		console.log(result)
+		bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result}`);
 		if(result >= 0.15) {
 			const obj = {
 				advcashPrice: advcashValue.rate,
@@ -33,7 +33,6 @@ function start(chatId) {
 				date: binanceValue.data.E,
 				result: result
 			};
-
 			bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
 		}
 	};
@@ -52,9 +51,9 @@ client.onclose = function() {
 
 async function getCurrencyValueAdvcash(fromValue, toValue, type, amountValue) {
 	const request = await advcash({
-		password: "KJDSV9809870S*DV&)*osdv",
-		apiName: "TEST",
-		accountEmail: "maxfininvest39@gmail.com"
+		password: process.env.PASSWORD_API,
+		apiName: process.env.API_NAME,
+		accountEmail: process.env.ACCOUNT_EMAIL
 	});
 	const response = await request.checkCurrencyExchange({
 			from: fromValue,
