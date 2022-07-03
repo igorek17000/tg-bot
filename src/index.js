@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const W3CWebSocket = require('websocket').w3cwebsocket;
 const client = new W3CWebSocket('wss://stream.binance.com:9443/stream?streams=usdtrub@miniTicker');
 
-const bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
+const bot = new TelegramBot('5466187776:AAHBMcTyg552dhgB4GRVKwoPrQHXDwk9wWI', {polling: true});
 
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
@@ -51,9 +51,9 @@ client.onclose = function() {
 
 async function getCurrencyValueAdvcash(fromValue, toValue, type, amountValue) {
 	const request = await advcash({
-		password: process.env.PASSWORD_API,
-		apiName: process.env.API_NAME,
-		accountEmail: process.env.ACCOUNT_EMAIL
+		password: 'KJDSV9809870S*DV&)*osdv',
+		apiName: 'TEST',
+		accountEmail: 'maxfininvest39@gmail.com'
 	});
 	const response = await request.checkCurrencyExchange({
 			from: fromValue,
