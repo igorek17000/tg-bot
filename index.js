@@ -23,18 +23,19 @@ bot.onText(/\/help/, (msg) => {
 function start(chatId) {
 	client.onmessage = async function(event) {
 		const binanceValue = JSON.parse(event.data);
-		const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
-		const result = advcashValue.rate - binanceValue.data.c;
-		bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result}\nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c}`);
-		if(result >= 0.15) {
-			const obj = {
-				advcashPrice: advcashValue.rate,
-				binancePrice: binanceValue.data.c,
-				date: binanceValue.data.E,
-				result: result
-			};
-			bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
-		}
+		// const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
+		// const result = advcashValue.rate - binanceValue.data.c;
+		// bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result}\nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c}`);
+		// if(result >= 0.15) {
+		// 	const obj = {
+		// 		advcashPrice: advcashValue.rate,
+		// 		binancePrice: binanceValue.data.c,
+		// 		date: binanceValue.data.E,
+		// 		result: result
+		// 	};
+		// 	bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
+		// }
+		bot.sendMessage(chatId, `${binanceValue.data.c}`)
 	};
 }
 
