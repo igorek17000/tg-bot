@@ -1,10 +1,11 @@
-require('dotenv').config()
+const fs = require('fs');
+require('dotenv').config();
 const advcash = require('advcash');
 const { default: axios } = require('axios');
 const TelegramBot = require('node-telegram-bot-api');
 const W3CWebSocket = require('websocket').w3cwebsocket;
 
-let i = 0
+
 
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
@@ -26,25 +27,31 @@ bot.onText(/\/help/, (msg) => {
 
 
 
-function checking(bot, chatId) {
+async function checking(bot, chatId) {
+	const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/KEY');
 	bot.sendMessage(chatId,`Введите секретный ключ, пожалуйста. \nPS. \nЕсли ключ не верный то Вы получите в ответ ничего.`);
-	const regexp = new RegExp(`${process.env.KEY}`, 'g');
+	const regexp = new RegExp(`${request.data[0].password}`, 'g');
 	bot.onText(regexp, async (msg) => {
-		try {
-			const request = await axios.post('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users', {
-				chat_id: msg.chat.id,
-				first_name: msg.chat.first_name,
-				username: msg.chat.username,
-				date: msg.date,
-			});
-			console.log('Success, user was created', {
-				status: request.status, statusText: request.statusText
-			});
-			await bot.sendMessage(chatId,`Вы успешно зарегистрировались на рассылку.`);
+		const checkResult = await checkUsersExistence(chatId);
+		if(!checkResult) {
+			try {
+				const request = await axios.post('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users', {
+					chatId: msg.chat.id,
+					firstName: msg.chat.first_name,
+					username: msg.chat.username,
+					date: msg.date,
+				});
+				console.log('Success, user was created', {
+					status: request.status, statusText: request.statusText
+				});
+				await bot.sendMessage(chatId,`Вы успешно зарегистрировались на рассылку.`);
+				startBotWork(msg);
+			} catch(e) {
+				console.log('Error, user was not created', e);
+				bot.sendMessage(chatId,`Упс, что-то пошло не так при регистрации. \nВоспользуйтесь командой /help`);
+			}
+		} else {
 			startBotWork(msg);
-		} catch(e) {
-			console.log('Error, user was not created', e);
-			bot.sendMessage(chatId,`Упс, что-то пошло не так при регистрации. \nВоспользуйтесь командой /help`);
 		}
 	});
 }
@@ -66,24 +73,17 @@ async function startLogic(chatId) {
 			if(binanceValue !== undefined && advcashValue !== undefined && binanceValue !== null && advcashValue !== null) {
 				const result = advcashValue.rate - binanceValue.data.c;
 				const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
-				if(i > 2) {
-					bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E}`);
-				}
-				console.log(i)
-				i++;
-				if (request.data.some(el => el.chat_id === chatId)) {
-					if(result >= 0.15) {
-						const obj = {
-							advcashPrice: advcashValue.rate,
-							binancePrice: binanceValue.data.c,
-							date: binanceValue.data.E,
-							result: result
-						};
-						bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
-					}
-				} else {
-					bot.sendMessage(chatId, `Кажеться Вас нету в списке пользователей. \nВоспользуйтесь командой /help`);
-				}
+				request.data.map(el => {
+					// if(result >= 0.15) {
+						const string = `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E} \n\n`;
+						bot.sendMessage(el.chatId, string);
+						fs.appendFileSync("dtata-from-advcash-and-binance-usdt-rub.txt", string, function(err) {
+							if(err) {
+								throw err;
+							}
+						});
+					// }
+				});
 			}
 		} catch(e) {
 			console.log(e);
@@ -119,4 +119,9 @@ async function getCurrencyValueAdvcash(fromValue, toValue, type, amountValue) {
 	} catch(e) {
 		console.log('THERE WAS AN ERROR with advcash!!!!', e);
 	}
+}
+
+async function checkUsersExistence(chatId) {
+	const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
+	return(Boolean(request.data.find(el => el.chatId === chatId)));
 }
