@@ -59,7 +59,7 @@ async function checking(bot, chatId) {
 				startBotWork(msg);
 			} catch(e) {
 				console.log('Error, user was not created', e);
-				bot.sendMessage(chatId,`Упс, что-то пошло не так при регистрации. \nВоспользуйтесь командой /help`);
+				bot.sendMessage(chatId,`Упс, что-то пошло не так при регистрации. \nВоспользуйтесь командой /help \nЧтобы отписаться от бота используй /delete`);
 			}
 		} else {
 			startBotWork(msg);
