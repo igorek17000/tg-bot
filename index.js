@@ -38,7 +38,9 @@ function checking(bot, chatId) {
 				username: msg.chat.username,
 				date: msg.date,
 			});
-			console.log('Success', request);
+			console.log('Success', {
+				status: request.status, statusText: request.statusText
+			});
 			await bot.sendMessage(chatId,`Вы успешно зарегистрировались на рассылку.`);
 			startBotWork(msg);
 		} catch(e) {
