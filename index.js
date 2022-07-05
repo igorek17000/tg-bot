@@ -23,6 +23,17 @@ bot.onText(/\/help/, (msg) => {
   bot.sendMessage(msg.chat.id, `Я на начальной стадии развития поэтому обратись к моему создателю, он 100% тебе поможет. \n@MaxVonRosenhof`);
 });
 
+bot.onText(/\/delete/, async(msg) => {
+	try {
+		console.log(msg)
+		await axios.delete('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users', {chatId: msg.chat.chatId})
+  		bot.sendMessage(msg.chat.id, `Вы отписались`);
+	} catch(e) {
+		console.log(e)
+		bot.sendMessage(chatId,`Упс, что-то пошло не так при отписке, попробуйте еще.`);
+	}
+});
+
 
 
 
