@@ -79,7 +79,7 @@ async function startLogic(chatId) {
 					// if(result >= 0.15) {
 						const string = `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E} \n\n`;
 						bot.sendMessage(el.chatId, string);
-						fs.appendFileSync(`${__dirname}/data-from-crypto-bot/data-from-advcash-and-binance-usdt-rub.txt`, string, function(err) {
+						fs.appendFileSync(`${__dirname}/data-from-advcash-and-binance-usdt-rub.txt`, string, function(err) {
 							if(err) {
 								throw err;
 							}
