@@ -69,6 +69,7 @@ async function startLogic(chatId) {
 				if(i > 2) {
 					bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E}`);
 				}
+				console.log(i)
 				i++;
 				if (request.data.some(el => el.chat_id === chatId)) {
 					if(result >= 0.15) {
