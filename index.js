@@ -4,8 +4,7 @@ const { default: axios } = require('axios');
 const TelegramBot = require('node-telegram-bot-api');
 const W3CWebSocket = require('websocket').w3cwebsocket;
 
-
-
+let i = 0
 
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
@@ -38,14 +37,14 @@ function checking(bot, chatId) {
 				username: msg.chat.username,
 				date: msg.date,
 			});
-			console.log('Success', {
+			console.log('Success, user was created', {
 				status: request.status, statusText: request.statusText
 			});
 			await bot.sendMessage(chatId,`Вы успешно зарегистрировались на рассылку.`);
 			startBotWork(msg);
 		} catch(e) {
-			console.log('Error', e);
-			bot.sendMessage(chatId,`Упс, что-то пошло не так. \nВоспользуйтесь командой /help`);
+			console.log('Error, user was not created', e);
+			bot.sendMessage(chatId,`Упс, что-то пошло не так при регистрации. \nВоспользуйтесь командой /help`);
 		}
 	});
 }
@@ -64,28 +63,34 @@ async function startLogic(chatId) {
 		try {
 			const binanceValue = JSON.parse(event.data);
 			const advcashValue = await getCurrencyValueAdvcash("USDT_TRC20", "RUR", "SELL", 1.00);
-			const result = advcashValue.rate - binanceValue.data.c;
-			const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
-			if (request.data.some(el => el.chat_id === chatId)) {
-				if(result >= 0.15) {
-					const obj = {
-						advcashPrice: advcashValue.rate,
-						binancePrice: binanceValue.data.c,
-						date: binanceValue.data.E,
-						result: result
-					};
-					bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
+			if(binanceValue !== undefined && advcashValue !== undefined && binanceValue !== null && advcashValue !== null) {
+				const result = advcashValue.rate - binanceValue.data.c;
+				const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
+				if(i < 2) {
+					bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E}`);
+					i++;
 				}
-			} else {
-				bot.sendMessage(chatId, `Кажеться Вас нету в списке пользователей. \nВоспользуйтесь командой /help`);
+				if (request.data.some(el => el.chat_id === chatId)) {
+					if(result >= 0.15) {
+						const obj = {
+							advcashPrice: advcashValue.rate,
+							binancePrice: binanceValue.data.c,
+							date: binanceValue.data.E,
+							result: result
+						};
+						bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${obj.result} \nЦена на AdvCahs: ${obj.advcashPrice} \nЦена на Binance: ${obj.binancePrice} \nВремя: ${obj.date}`);
+					}
+				} else {
+					bot.sendMessage(chatId, `Кажеться Вас нету в списке пользователей. \nВоспользуйтесь командой /help`);
+				}
 			}
 		} catch(e) {
 			console.log(e);
-			bot.sendMessage(chatId, `Упс, что-то пошло не так. \nВоспользуйтесь командой /help`);
+			bot.sendMessage(chatId, `Упс, что-то пошло не так при отправке Вам сообщения. \nВоспользуйтесь командой /help`);
 		}
 	};
 	client.onerror = function() {
-		console.log('There was an ERROR!');
+		console.log('There was an ERROR with binance!');
 	};
 	client.onopen = function() {
 		console.log('The connection was opened');
@@ -111,6 +116,6 @@ async function getCurrencyValueAdvcash(fromValue, toValue, type, amountValue) {
 		const result = await response;
 		return result;
 	} catch(e) {
-		console.log('THERE WAS AN ERROR!!!!', e);
+		console.log('THERE WAS AN ERROR with advcash!!!!', e);
 	}
 }
