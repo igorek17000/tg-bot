@@ -26,11 +26,11 @@ bot.onText(/\/help/, (msg) => {
 bot.onText(/\/delete/, async(msg) => {
 	try {
 		console.log(msg)
-		await axios.delete('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users', {chatId: msg.chat.chatId})
+		await axios.delete('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users', {chatId: msg.chat.id})
   		bot.sendMessage(msg.chat.id, `Вы отписались`);
 	} catch(e) {
 		console.log(e)
-		bot.sendMessage(chatId,`Упс, что-то пошло не так при отписке, попробуйте еще.`);
+		bot.sendMessage(msg.chat.id,`Упс, что-то пошло не так при отписке, попробуйте еще.`);
 	}
 });
 
