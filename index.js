@@ -1,4 +1,3 @@
-const fs = require('fs');
 require('dotenv').config();
 const advcash = require('advcash');
 const { default: axios } = require('axios');
@@ -29,7 +28,6 @@ bot.onText(/\/help/, (msg) => {
 
 
 async function checking(bot, chatId) {
-	console.log(__dirname)
 	const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/KEY');
 	bot.sendMessage(chatId,`Введите секретный ключ, пожалуйста. \nPS. \nЕсли ключ не верный то Вы получите в ответ ничего.`);
 	const regexp = new RegExp(`${request.data[0].password}`, 'g');
@@ -79,11 +77,12 @@ async function startLogic(chatId) {
 					// if(result >= 0.15) {
 						const string = `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E} \n\n`;
 						bot.sendMessage(el.chatId, string);
-						fs.appendFileSync(`${__dirname}/data-from-advcash-and-binance-usdt-rub.txt`, string, function(err) {
-							if(err) {
-								throw err;
-							}
-						});
+						axios.post('https://610b9ecc2b6add0017cb399f.mockapi.io/data-which-was-sent', {
+							date:binanceValue.data.E,
+							binance:binanceValue.data.c,
+							advcash:advcashValue.rate,
+							result:result
+						}).then(() => console.log('data was saved')).catch(e => console.log(e))
 					// }
 				});
 			}
