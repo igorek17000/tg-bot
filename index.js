@@ -66,7 +66,7 @@ async function startLogic(chatId) {
 			if(binanceValue !== undefined && advcashValue !== undefined && binanceValue !== null && advcashValue !== null) {
 				const result = advcashValue.rate - binanceValue.data.c;
 				const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
-				if(i < 2) {
+				if(i > 2) {
 					bot.sendMessage(chatId, `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E}`);
 					i++;
 				}
