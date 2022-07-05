@@ -74,7 +74,7 @@ async function startLogic(chatId) {
 				const result = advcashValue.rate - binanceValue.data.c;
 				const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/bot-users');
 				request.data.map(el => {
-					// if(result >= 0.15) {
+					if(result >= 0.15) {
 						const string = `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E} \n\n`;
 						bot.sendMessage(el.chatId, string);
 						axios.post('https://610b9ecc2b6add0017cb399f.mockapi.io/data-which-was-sent', {
@@ -83,7 +83,7 @@ async function startLogic(chatId) {
 							advcash:advcashValue.rate,
 							result:result
 						}).then(() => console.log('data was saved')).catch(e => console.log(e))
-					// }
+					}
 				});
 			}
 		} catch(e) {
