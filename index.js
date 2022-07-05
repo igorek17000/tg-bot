@@ -8,6 +8,7 @@ const W3CWebSocket = require('websocket').w3cwebsocket;
 
 
 
+
 const bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
 const client = new W3CWebSocket('wss://stream.binance.com:9443/stream?streams=usdtrub@miniTicker');
 
@@ -28,6 +29,7 @@ bot.onText(/\/help/, (msg) => {
 
 
 async function checking(bot, chatId) {
+	console.log(__dirname)
 	const request = await axios.get('https://610b9ecc2b6add0017cb399f.mockapi.io/KEY');
 	bot.sendMessage(chatId,`Введите секретный ключ, пожалуйста. \nPS. \nЕсли ключ не верный то Вы получите в ответ ничего.`);
 	const regexp = new RegExp(`${request.data[0].password}`, 'g');
@@ -77,9 +79,7 @@ async function startLogic(chatId) {
 					// if(result >= 0.15) {
 						const string = `Разница(AdvCash > Binance): ${result} \nЦена на AdvCahs: ${advcashValue.rate} \nЦена на Binance: ${binanceValue.data.c} \nВремя: ${binanceValue.data.E} \n\n`;
 						bot.sendMessage(el.chatId, string);
-						console.log('sent')
-						fs.appendFileSync("data-from-advcash-and-binance-usdt-rub.txt", string, function(err) {
-							console.log('done')
+						fs.appendFileSync(`${__dirname}/data-from-crypto-bot/data-from-advcash-and-binance-usdt-rub.txt`, string, function(err) {
 							if(err) {
 								throw err;
 							}
